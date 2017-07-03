@@ -1,12 +1,13 @@
 
 from kraken.auth import build_headers
-from kraken.request import urljoin, urlencode
 
 
 class Kraken:
 
-    api_url = 'api.kraken.com'
-    api_version = 0
+    base_url = 'https://api.kraken.com'
+    api_version = '0'
+
+    # Public Methods
 
     def get_server_time(self):
         return self.build_request(method='GET', end_point='public/Time')
@@ -32,8 +33,24 @@ class Kraken:
     def get_recent_spread(self):
         return self.build_request(method='GET', end_point='public/Spread')
 
+    # Private methods
+
+    def get_account_balance(self):
+        return self.build_request(method='POST', end_point='private/Balance')
+
+    def get_trade_balance(self, asset_class, asset):
+        data = {'aclass': asset_class, 'asset': asset}
+        return self.build_request(method='POST', end_point='private/TradeBalance', data=data)
+
+    def get_open_orders(self, trades=True, user_ref=None):
+        data = {'trades': str(trades).lower(), 'userref': user_ref}
+        return self.build_request(method='POST', end_point='private/OpenOrders', data=data)
+
     def build_request(self, method, end_point, data=None):
-        #TODO
-        url = urljoin(self.api_url, self.api_version, end_point)
-        headers = build_headers(end_point, data)
-        return dict(method=method, url=url, headers=headers, data=data)
+        headers = None
+        end_point = '/%s/%s' % (self.api_version, end_point)
+        if method == 'POST':
+            headers = build_headers(end_point, data)
+            data = data or {}
+            data.update({'nonce': headers.pop('nonce')})
+        return dict(method=method, url=self.base_url + end_point, headers=headers, data=data)
