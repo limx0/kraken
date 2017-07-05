@@ -7,8 +7,6 @@ class Kraken:
     base_url = 'https://api.kraken.com'
     api_version = '0'
 
-    # Public Methods
-
     def get_server_time(self):
         return self.build_request(method='GET', end_point='public/Time')
 
@@ -19,21 +17,21 @@ class Kraken:
         return self.build_request(method='GET', end_point='public/AssetPairs')
 
     def get_ticker_information(self, pair):
-        return self.build_request(method='GET', end_point='public/Ticker')
+        data = {'pair': pair}
+        return self.build_request(method='POST', end_point='public/Ticker', data=data)
 
     def get_ohlc(self):
         return self.build_request(method='GET', end_point='public/OHLC')
 
     def get_order_book(self, pair):
-        return self.build_request(method='GET', end_point='public/Depth')
+        data = {'pair': pair}
+        return self.build_request(method='POST', end_point='public/Depth', data=data)
 
     def get_recent_trades(self):
         return self.build_request(method='GET', end_point='public/Trades')
 
     def get_recent_spread(self):
         return self.build_request(method='GET', end_point='public/Spread')
-
-    # Private methods
 
     def get_account_balance(self):
         return self.build_request(method='POST', end_point='private/Balance')
