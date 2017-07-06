@@ -15,5 +15,6 @@ def urllib_request(method, url, headers, data):
     from urllib.request import urlopen, Request
     if isinstance(data, str):
         data = data.encode("utf-8")
-    resp = urlopen(Request(method=method, url=url, headers=headers, data=data))
+    resp = urlopen(Request(method=method, url=url, headers=headers or {}, data=data))
     return json.loads(resp.read().decode())
+
